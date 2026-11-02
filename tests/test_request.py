@@ -5,6 +5,7 @@ from app.requests import (
     update_status,
     get_request_summary,
     get_open_requests,
+    get_requests_by_priority,
 )
 
 
@@ -16,6 +17,7 @@ def test_create_request():
 
     assert request["title"] == "Login issue"
     assert request["status"] == "open"
+    assert request["priority"] == "Medium"
 
 
 def test_create_request_strips_whitespace():
@@ -105,3 +107,46 @@ def test_get_open_requests_empty():
 def test_get_open_requests_invalid():
     with pytest.raises(TypeError):
         get_open_requests(None)
+
+
+@pytest.mark.parametrize(
+    "priority",
+    ["Low", "Medium", "High", "Critical"],
+)
+def test_get_requests_by_priority(priority):
+    requests = [
+        {"title": "Low request", "priority": "Low"},
+        {"title": "Medium request", "priority": "Medium"},
+        {"title": "High request", "priority": "High"},
+        {"title": "Critical request", "priority": "Critical"},
+        {"title": "Missing priority"},
+        None,
+    ]
+
+    result = get_requests_by_priority(requests, priority)
+
+    assert result == [
+        {"title": f"{priority} request", "priority": priority}
+    ]
+
+
+@pytest.mark.parametrize(
+    "priority",
+    ["", "low", "urgent", None, 1],
+)
+def test_get_requests_by_priority_invalid_priority(priority):
+    with pytest.raises(ValueError):
+        get_requests_by_priority([], priority)
+
+
+@pytest.mark.parametrize(
+    "requests",
+    [None, (), {"priority": "High"}],
+)
+def test_get_requests_by_priority_invalid_collection(requests):
+    with pytest.raises(TypeError):
+        get_requests_by_priority(requests, "High")
+
+
+def test_get_requests_by_priority_empty():
+    assert get_requests_by_priority([], "Low") == []
