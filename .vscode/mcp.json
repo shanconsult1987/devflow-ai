@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "devflow": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server.server"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "DEVFLOW_REPO": "${workspaceFolder}"
+      }
+    }
+  }
+}
