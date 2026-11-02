@@ -6,6 +6,13 @@ VALID_STATUSES = (
     "closed",
 )
 
+VALID_PRIORITIES = (
+    "Low",
+    "Medium",
+    "High",
+    "Critical",
+)
+
 
 def create_request(
     title: str,
@@ -26,6 +33,7 @@ def create_request(
         "title": title.strip(),
         "description": description.strip(),
         "status": "open",
+        "priority": "Medium",
     }
 
 
@@ -73,4 +81,24 @@ def get_open_requests(requests: list[dict]) -> list[dict]:
         for request in requests
         if isinstance(request, dict)
         and request.get("status") == "open"
+    ]
+
+
+def get_requests_by_priority(
+    requests: list[dict],
+    priority: str,
+) -> list[dict]:
+    """Return only requests matching a supported priority."""
+
+    if not isinstance(requests, list):
+        raise TypeError("Requests must be a list")
+
+    if not isinstance(priority, str) or priority not in VALID_PRIORITIES:
+        raise ValueError("Invalid priority")
+
+    return [
+        request
+        for request in requests
+        if isinstance(request, dict)
+        and request.get("priority") == priority
     ]
